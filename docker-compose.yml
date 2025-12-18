@@ -1,0 +1,61 @@
+version: '3.8'
+
+services:
+  mongo-predict:
+    image: mongo:7.0
+    container_name: mongo-predict
+    restart: unless-stopped
+    volumes:
+      - mongo-predict-data:/data/db
+    ports:
+      - "27020:27017" #Puerto host || Puerto contenedor 
+
+  mongo-acquire:
+    image: mongo:7.0
+    container_name: mongo-acquire
+    restart: unless-stopped
+    volumes:
+      - mongo-acquire-data:/data/db
+    ports:
+      - "27021:27017"
+
+  acquire-service:
+    build: ./Acquire #docker entra en la carpeta ./Acquire lee su Dockerfile y construye la imagen 
+    image: acquire-service:1.0
+    container_name: acquire-service
+    restart: unless-stopped
+    depends_on:
+      - mongo-acquire #Arranca Mongo antes que acquire 
+    env_file:
+      - ./Acquire/.env.docker #Defino donde se encuentran las variables de entorno 
+    ports:
+      - "3001:3001"
+
+  predict-service:
+    build: ./Predict
+    image: predict-service:1.0
+    container_name: predict-service
+    restart: unless-stopped
+    depends_on:
+      - mongo-predict
+    env_file:
+      - ./Predict/.env.docker
+    ports:
+      - "3002:3002" #Donde escucha el servidor dentro del contenedor lo definimos en dockerfile expose 
+
+  orchestrator-service:
+    build: ./Orchestrator
+    image: orchestrator-service:1.0
+    container_name: orchestrator-service
+    restart: unless-stopped
+    depends_on:
+      - acquire-service
+      - predict-service
+    env_file:
+      - ./Orchestrator/.env.docker
+    ports:
+      - "3003:8080"
+
+volumes:
+  mongo-predict-data:
+  mongo-acquire-data:

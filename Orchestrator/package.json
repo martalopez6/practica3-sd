@@ -1,0 +1,16 @@
+{
+  "name": "orchestator",
+  "version": "1.0.0",
+  "description": "Orchestator microservicio",
+  "license": "ISC",
+  "author": "Marta Lopez Martos",
+  "type": "commonjs",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "dotenv": "^17.2.3",
+    "express": "^5.2.1"
+  }
+}
