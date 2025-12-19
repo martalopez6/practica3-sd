@@ -14,7 +14,7 @@ RUN npm ci --omit=dev
 COPY . .
 
 # El servicio escucha en 3002
-EXPOSE 8008
+EXPOSE 8080
 
 # Comando de arranque
 CMD ["node", "server.js"]
